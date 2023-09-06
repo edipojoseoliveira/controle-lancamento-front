@@ -1,0 +1,136 @@
+<div class="grid">
+    <div class="col-12">
+        <p-confirmDialog [style]="{maxWidth: '100vw'}" acceptLabel="Sim" rejectLabel="Não"
+            rejectButtonStyleClass="p-button-danger" [baseZIndex]="10000">
+        </p-confirmDialog>
+        <p-dialog header="Cadastro de módulo" [(visible)]="renderedCadastroModulo">
+            <form [formGroup]="moduloFormGroup" #formModulo="ngForm">
+                <div class="p-fluid p-formgrid grid grid-nogutter">
+                    <div class="field col-12 md:col-12 p-1">
+                        <label htmlFor="txtNome" for="txtNome">Nome:</label>
+                        <input pInputText id="txtNome" formControlName="nome" type="text"
+                            placeholder="Nome do módulo" />
+                    </div>
+                    <div class="field col-12 md:col-12 p-1">
+                        <label htmlFor="txtDescricao" for="txtDescricao">Descrição:</label>
+                        <input pInputText id="txtDescricao" formControlName="descricao" type="text"
+                            placeholder="Descrição do módulo" />
+                    </div>
+                </div>
+            </form>
+            <ng-template pTemplate="footer">
+                <button type="button" pButton pRipple icon="pi pi-times" class="p-button-danger mr-2 mb-2"
+                    (click)="cancelarModulo()" style="width: 3rem;"></button>
+                <button type="button" pButton pRipple icon="pi pi-check" class="p-button-success mb-2"
+                    (click)="salvarModulo()" label="SALVAR"></button>
+            </ng-template>
+        </p-dialog>
+        <div class="card" *ngIf="renderedCadastro">
+            <form [formGroup]="formGroup" #form="ngForm" (ngSubmit)="salvar()">
+                <div class="flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4>Cadastro de método</h4>
+                    </div>
+                    <div class="flex-none">
+                        <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelar()"
+                            class="p-button-danger mr-2 mb-2"></button>
+                        <button type="submit" pButton pRipple icon="pi pi-check" label="SALVAR"
+                            class="p-button-success mb-2"></button>
+                    </div>
+                </div>
+                <div class="p-fluid p-formgrid grid grid-nogutter">
+                    <div class="field col-12 md:col-12">
+                        <label htmlFor="txtNome" for="txtNome">Nome: *</label>
+                        <input pInputText id="txtNome" formControlName="nome" [required]="true" type="text"
+                            placeholder="Nome da faixa" />
+                        <small
+                            *ngIf="nome.invalid && (form.submitted || nome.dirty || nome.touched) && nome.errors?.['required']"
+                            class="p-error">
+                            O nome é obrigatório.
+                        </small>
+                    </div>
+                    <div class="col-12 md:col-12" *ngIf="id.value">
+                        <p-fieldset legend="Módulos">
+                            <div class="flex align-items-center justify-content-end">
+                                <div class="flex-none p-1">
+                                    <button type="button" pButton pRipple icon="pi pi-file" label="NOVO MÓDULO"
+                                        (click)="novoModulo()" class="mr-2 mb-2"></button>
+                                </div>
+                                <div class="flex-none p-1">
+                                    <button type="button" pButton pRipple icon="pi pi-trash"
+                                        class="p-button-danger mb-2"></button>
+                                </div>
+                            </div>
+                            <p-tree [value]="modulos" layout="horizontal" selectionMode="single"
+                                [(selection)]="moduloSelecionado" (onNodeExpand)="nodeModuloExpand($event)"
+                                [lazy]="true">
+                                <ng-template pTemplate="empty">
+                                    <p>Nenhum resultado encontrado</p>
+                                </ng-template>
+                            </p-tree>
+                        </p-fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card p-fluid" *ngIf="!renderedCadastro">
+            <div class="flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4>Filtro de métodos</h4>
+                </div>
+            </div>
+            <div class="flex align-items-end">
+                <div class="flex-grow-1 p-1">
+                    <div class="field">
+                        <label for="pesquisa">O que você procura?</label>
+                        <input id="pesquisa" type="text" pInputText [(ngModel)]="pesquisa" />
+                    </div>
+                </div>
+                <div class="flex-none p-1">
+                    <div class="field">
+                        <button pButton pRipple icon="pi pi-filter-fill" class="p-button-help"
+                            (click)="filtrar()"></button>
+                    </div>
+                </div>
+                <div class="flex-none p-1">
+                    <div class="field">
+                        <button pButton pRipple icon="pi pi-sitemap" label="NOVO MÉTODO" (click)="novo()"></button>
+                    </div>
+                </div>
+            </div>
+            <p-table [value]="lista" styleClass="p-datatable-striped p-datatable-gridlines"
+                responsiveLayout="scroll" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} até {last} de {totalRecords} registros"
+                [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Nome</th>
+                        <th style="width: 6rem; text-align: center;">Ações</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-faixa>
+                    <tr>
+                        <td>{{faixa.nome}}</td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success p-button-text mr-2"
+                                    (click)="editar(faixa)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-text"
+                                    (click)="deletar(faixa)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="2">
+                            Nenhum registro foi encontrado
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>

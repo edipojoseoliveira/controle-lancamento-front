@@ -1,0 +1,196 @@
+<div class="grid">
+    <div class="col-12">
+        <p-confirmDialog [style]="{maxWidth: '100vw'}" acceptLabel="Sim" rejectLabel="Não"
+            rejectButtonStyleClass="p-button-danger" [baseZIndex]="10000">
+        </p-confirmDialog>
+        <p-dialog header="Cadastro de sub-nicho" [(visible)]="renderedCadastroSubNicho">
+            <form [formGroup]="subNichoFormGroup" #formSubNicho="ngForm" *ngIf="renderedCadastroSubNicho">
+                <div class="p-fluid formgrid grid grid-nogutter">
+                    <div class="field col-12 md:col-6 p-1">
+                        <label htmlFor="txtNomeSubNicho" for="txtNomeSubNicho">Nome:</label>
+                        <input pInputText id="txtNomeSubNicho" formControlName="nome" type="text"
+                            placeholder="Nome do sub-nicho"/>
+                    </div>
+                    <div class="field col-12 md:col-6 p-1">
+                        <label htmlFor="ddTipoSubNicho" for="ddTipoSubNicho">Tipo:</label>
+                        <p-dropdown id="ddTipoSubNicho" [options]="tiposSubNicho" optionLabel="label"
+                            optionValue="enum" formControlName="tipo"></p-dropdown>
+                    </div>
+                    <div class="field col-12 md:col-4 p-1">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" formControlName="resultadoDoExpert" inputId="cbResultadoDoExpert"></p-checkbox>
+                            <label for="cbResultadoDoExpert">Resultado do expert</label>
+                        </div>
+                    </div>
+                    <div class="field col-12 md:col-4 p-1">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" formControlName="resultadoDeClientes" inputId="cbResultadoDeClientes"></p-checkbox>
+                            <label for="cbResultadoDeClientes">Resultado de clientes</label>
+                        </div>
+                    </div>
+                    <div class="field col-12 md:col-4 p-1">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" formControlName="pessoasPedindoProduto" inputId="cbPessoasPedindoProduto"></p-checkbox>
+                            <label for="cbPessoasPedindoProduto">Pessoas pedindo produto</label>
+                        </div>
+                    </div>
+                    <div class="field col-12 md:col-4 p-1">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" formControlName="ativo" inputId="cbAtivo"></p-checkbox>
+                            <label for="cbAtivo">Ativo</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <ng-template pTemplate="footer">
+                <button type="button" pButton pRipple icon="pi pi-times" class="p-button-danger mr-2 mb-2"
+                    (click)="cancelarSubNicho()" style="width: 3rem;"></button>
+                <button type="button" pButton pRipple icon="pi pi-check" class="p-button-success mb-2"
+                    (click)="salvarSubNicho()" label="SALVAR"></button>
+            </ng-template>
+        </p-dialog>
+        <div class="card" *ngIf="renderedCadastro">
+            <form [formGroup]="formGroup" #form="ngForm" (ngSubmit)="salvar()">
+                <div class="flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4>Cadastro de nichos</h4>
+                    </div>
+                    <div class="flex-none">
+                        <button type="button" pButton pRipple icon="pi pi-times" (click)="cancelar()"
+                            class="p-button-danger mr-2 mb-2"></button>
+                        <button type="submit" pButton pRipple icon="pi pi-check" label="SALVAR"
+                            class="p-button-success mb-2"></button>
+                    </div>
+                </div>
+                <div class="p-fluid formgrid grid grid-nogutter">
+                    <div class="field col-12 md:col-12">
+                        <label htmlFor="txtNome" for="txtNome">Nome: *</label>
+                        <input pInputText id="txtNome" formControlName="nome" [required]="true" type="text"
+                            placeholder="Nome" />
+                        <small
+                            *ngIf="nome.invalid && (form.submitted || nome.dirty || nome.touched) && nome.errors?.['required']"
+                            class="p-error">
+                            O nome é obrigatório.
+                        </small>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <div class="field-checkbox">
+                            <p-checkbox [binary]="true" formControlName="ativo" inputId="cbAtivo"></p-checkbox>
+                            <label for="cbAtivo">Ativo</label>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-12">
+                        <p-fieldset legend="Sub-nichos">
+                            <div class="flex align-items-end justify-content-end">
+                                <div class="flex-none p-1">
+                                    <div class="field">
+                                        <button type="button" pButton pRipple icon="pi pi-file" label="NOVO SUB-NICHO"
+                                            (click)="novoSubNicho()"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <p-table [value]="listaSubNicho" styleClass="p-datatable-striped p-datatable-gridlines"
+                                responsiveLayout="scroll" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                                currentPageReportTemplate="{first} até {last} de {totalRecords} registros"
+                                [rowsPerPageOptions]="[10,25,50]">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Ativo</th>
+                                        <th style="width: 6rem; text-align: center;">Ações</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-subNicho>
+                                    <tr>
+                                        <td>{{subNicho.nome}}</td>
+                                        <td>{{subNicho.ativo}}</td>
+                                        <td>
+                                            <div class="flex">
+                                                <button pButton pRipple icon="pi pi-pencil"
+                                                    class="p-button-rounded p-button-success p-button-text mr-2"
+                                                    (click)="editarSubNicho(subNicho)"
+                                                    type="button"></button>
+                                                <button pButton pRipple icon="pi pi-trash"
+                                                    class="p-button-rounded p-button-danger p-button-text"
+                                                    (click)="deletarSubNicho(subNicho)"
+                                                    type="button"></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td [attr.colspan]="3">
+                                            Nenhum registro foi encontrado
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card p-fluid" *ngIf="!renderedCadastro">
+            <div class="flex align-items-center">
+                <div class="flex-grow-1">
+                    <h4>Filtro de nichos</h4>
+                </div>
+            </div>
+            <div class="flex align-items-end">
+                <div class="flex-grow-1 p-1">
+                    <div class="field">
+                        <label for="pesquisa">O que você procura?</label>
+                        <input id="pesquisa" type="text" pInputText [(ngModel)]="pesquisa" />
+                    </div>
+                </div>
+                <div class="flex-none p-1">
+                    <div class="field">
+                        <button pButton pRipple icon="pi pi-filter-fill" class="p-button-help"
+                            (click)="filtrar()"></button>
+                    </div>
+                </div>
+                <div class="flex-none p-1">
+                    <div class="field">
+                        <button pButton pRipple icon="pi pi-globe" label="NOVO NICHO" (click)="novo()"></button>
+                    </div>
+                </div>
+            </div>
+            <p-table [value]="lista" styleClass="p-datatable-striped p-datatable-gridlines"
+                responsiveLayout="scroll" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+                currentPageReportTemplate="{first} até {last} de {totalRecords} registros"
+                [rowsPerPageOptions]="[10,25,50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ativo</th>
+                        <th style="width: 6rem; text-align: center;">Ações</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-nicho>
+                    <tr>
+                        <td>{{nicho.nome}}</td>
+                        <td>{{nicho.ativo}}</td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success p-button-text mr-2"
+                                    (click)="editar(nicho)"></button>
+                                <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button-rounded p-button-danger p-button-text"
+                                    (click)="deletar(nicho)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="3">
+                            Nenhum registro foi encontrado
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
